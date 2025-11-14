@@ -1,0 +1,22 @@
+{
+  "name": "8_melhorando_visual",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "none"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "none"
+  },
+  "license": "ISC",
+  "author": "eu",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "none"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2"
+  }
+}
