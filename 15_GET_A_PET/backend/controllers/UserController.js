@@ -45,7 +45,7 @@ module.exports = class UserController {
 
         //verificar se o email ja foi cadastrado na base
 
-        const userExist = await User.findOne({ emai: email })
+        const userExist = await User.findOne({ email: email })
 
         if (userExist) {
             res.status(422).json({
@@ -73,12 +73,49 @@ module.exports = class UserController {
 
         try {
             const newUser = await user.save()
-            await createUserToken(newUser,req,res)
+            await createUserToken(newUser, req, res)
 
             return
 
         } catch (error) {
             res.status(500).json({ message: error })
         }
+    }
+
+    static async login(req, res) {
+        const { email, password } = req.body
+
+        if (!email) {
+            res.status(422).json({ message: "o email é obrigatório" })
+            return
+        }
+        if (!password) {
+            res.status(422).json({ message: "a senha é obrigatório" })
+            return
+        }
+
+        const user = await User.findOne({ email: email })
+
+        if (!user) {
+            res.status(422).json({
+                message: "Não temos um usuário cadastrado com esse Email!"
+            })
+            return
+        }
+
+        //chegar senha 
+        const checkPassword = await bcrypt.compare(password, user.password)
+
+        if (!checkPassword) {
+            res.status(422).json({
+                message: "Senha incorreta!"
+            })
+            return
+        }
+
+
+        await createUserToken(user, req, res)
+
+
     }
 }
