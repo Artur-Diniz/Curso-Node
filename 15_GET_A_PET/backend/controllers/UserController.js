@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken")
 const createUserToken = require('../helpers/create-user-token')
 const getToken = require('../helpers/get-token')
 const { param } = require('../routes/UserRoutes')
+const getUserByToken = require("../helpers/get-user-by-token")
 
 
 module.exports = class UserController {
@@ -28,7 +29,7 @@ module.exports = class UserController {
             return
         }
         if (!password) {
-            res.status(422).json({ message: "o senha é obrigatório" })
+            res.status(422).json({ message: "a senha é obrigatório" })
             return
         }
         if (!email) {
@@ -36,7 +37,7 @@ module.exports = class UserController {
             return
         }
         if (!confirmpassword) {
-            res.status(422).json({ message: "o senha é obrigatório" })
+            res.status(422).json({ message: "a senha é obrigatório" })
             return
         }
         if (!phone) {
@@ -157,14 +158,86 @@ module.exports = class UserController {
 
         res.status(200).json({ user })
     }
+
+
     static async editUser(req, res) {
 
-        // const id = req.params.id
+        const id = req.params.id
+
+        const token = getToken(req)
+        const user = await getUserByToken(token)
 
 
-        res.status(200).json({
-            message: "Usuario atualizado "
-        })
+        const { name, email, phone, password, confirmpassword } = req.body
+
+        let image = ""
+
+        //validação
+        if (!name) {
+            res.status(422).json({ message: "o nome é obrigatório" })
+            return
+        }
+        if (!password) {
+            res.status(422).json({ message: "a senha é obrigatório" })
+            return
+        }
+        if (!email) {
+            res.status(422).json({ message: "o email é obrigatório" })
+            return
+        }
+        if (!confirmpassword) {
+            res.status(422).json({ message: "a senha é obrigatório" })
+            return
+        }
+        if (!phone) {
+            res.status(422).json({ message: "o telefone é obrigatório" })
+            return
+        }
+        if (password != confirmpassword) {
+            res.status(400).json({ message: "a senha e a confirmação de senha devem ser iguais" })
+            return
+        } else if (password === confirmpassword && password != null) {
+
+            const salt = await bcrypt.genSalt(12)
+            const passwordHash = await bcrypt.hash(password, salt)
+
+            user.password = passwordHash
+
+        }
+
+        //confirmação se ja existe esse email no banco
+        const userExist = await User.findOne({ email: email })
+
+
+        if (user.email !== email && userExist) {
+            res.status(422).json({
+                message: "Utilize outro Email."
+            })
+        }
+
+        user.name = name
+        user.email = email
+        user.phone = phone
+
+        try {
+
+            const updaterUser = await User.findOneAndUpdate(
+                { _id: user._id },
+                { $set: user },
+                { new: true }
+            )
+
+            res.status(200).json({
+                message: "User atualizado com sucesso"
+            })
+
+        } catch (err) {
+            res.status(500).json({
+                message: err
+            })
+        }
+
+
 
     }
 
