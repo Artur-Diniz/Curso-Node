@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken")
 //helpers
 const createUserToken = require('../helpers/create-user-token')
 const getToken = require('../helpers/get-token')
+const { param } = require('../routes/UserRoutes')
 
 
 module.exports = class UserController {
@@ -138,5 +139,22 @@ module.exports = class UserController {
         }
 
         res.status(200).send(currentuser)
+    }
+
+    static async getUserById(req, res) {
+
+        const id = req.params.id
+
+        const user = await User.findById(id).select('-password')
+
+        if (!user) {
+            res.status(422).json({
+                message: "Usuário não encontrado."
+            })
+
+            return
+        }
+        
+        res.status(200).json({user})
     }
 }
