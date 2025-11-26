@@ -154,7 +154,19 @@ module.exports = class UserController {
 
             return
         }
-        
-        res.status(200).json({user})
+
+        res.status(200).json({ user })
     }
+    static async editUser(req, res) {
+
+        // const id = req.params.id
+
+
+        res.status(200).json({
+            message: "Usuario atualizado "
+        })
+
+    }
+
+
 }
