@@ -10,6 +10,8 @@ module.exports = class PetController {
 
         const { name, age, weight, color } = req.body
 
+        const images = req.files
+
         const available = true
 
         //images upload
@@ -22,7 +24,7 @@ module.exports = class PetController {
             return
         }
         if (!weight) {
-            res.status(422).json({ message: "Pet não pode ser cadastrado sem altura" })
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Altura" })
             return
         }
         if (!color) {
@@ -30,12 +32,16 @@ module.exports = class PetController {
             return
         }
 
-        if (!req.headers.authorization) {
-            console.log("Falho")
+
+        if (images.length === 0) {
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Foto" })
+            return
         }
 
 
-        const token =  getToken(req) // busca token pela request
+
+
+        const token = getToken(req) // busca token pela request
         const user = await getUserByToken(token)
 
 
@@ -48,6 +54,10 @@ module.exports = class PetController {
             }
         })
 
+        images.map((image) => {
+            pet.images.push(image.filename)
+        })
+
         // console.log("Headers:", req.headers);
 
 
@@ -55,7 +65,6 @@ module.exports = class PetController {
 
             // console.log(pet)
             const newPet = await pet.save()
-            console.log("Salvo no banco")
             res.status(201).json({ message: "Pet Cadastrado com sucesso!", newPet })
 
 
