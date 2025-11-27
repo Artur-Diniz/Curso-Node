@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken")
 const getToken = require('../helpers/get-token')
 
-const checkToekn = (req, res, next) => {
+const checkToken = (req, res, next) => {
 
     if (!req.headers.authorization) {
         return res.status(401).json({ message: "Acesso Negado!" })
-
     }
     const token = getToken(req)
 
@@ -25,4 +24,4 @@ const checkToekn = (req, res, next) => {
 
 }
 
-module.exports = checkToekn
+module.exports = checkToken

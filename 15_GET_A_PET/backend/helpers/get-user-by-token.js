@@ -5,7 +5,8 @@ const User = require("../models/user")
 const getUserByToken = async (token) => {
 
     if (!token) {
-        return res.status(401).json({ message: "Acesso Negado!" })
+        res.status(401).json({ message: "Acesso Negado!" })
+        return 
     }
 
     const decoded = jwt.verify(token, "nossosecret")
