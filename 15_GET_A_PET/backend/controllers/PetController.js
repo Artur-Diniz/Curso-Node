@@ -109,7 +109,6 @@ module.exports = class PetController {
     }
 
     static async getPetbyId(req, res) {
-
         const id = req.params.id
 
         if (!ObjectId.isValid(id)) {
@@ -118,7 +117,7 @@ module.exports = class PetController {
         }
 
 
-        const pet = await Pet.find({ _id: id })
+        const pet = await Pet.findOne({ _id: id })
 
         if (!pet) {
             res.status(404).json({ message: "Pet não encontrado!" })
@@ -126,9 +125,111 @@ module.exports = class PetController {
         }
 
         res.status(200).json({
-             pet: pet,
+            pet: pet,
         })
     }
+
+
+    static async removePetById(req, res) {
+        const id = req.params.id
+
+        //verifica se o Id é valido 
+        if (!ObjectId.isValid(id)) {
+            res.status(417).json({ message: "Id invalido!" })
+            return
+        }
+
+        //busca pet na base
+        const pet = await Pet.findOne({ _id: id })
+
+        //verifica se existe um pet com esse id
+        if (!pet) {
+            res.status(404).json({ message: "Pet não encontrado!" })
+            return
+        }
+
+        const token = getToken(req) // busca token pela request
+        const user = await getUserByToken(token)
+
+
+        if (pet.user._id.toString() !== user._id.toString()) {
+            res.status(417).json({ message: "Houve um problema ao processar sua solicitação!" })
+            return
+        }
+
+        await Pet.findByIdAndDelete(id)
+
+        res.status(200).json({
+            message: "Pet removido com sucesso"
+        })
+    }
+
+    static async updatePetById(req, res) {
+
+        const { name, age, weight, color, available } = req.body
+
+        const images = req.files
+
+        const updatedData = {}
+
+
+        const id = req.params.id
+
+        //verifica se o Id é valido 
+        if (!ObjectId.isValid(id)) {
+            res.status(417).json({ message: "Id invalido!" })
+            return
+        }
+
+
+        //images upload
+        if (!name) {
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Nome" })
+            return
+        } else {
+            updatedData.name = name
+        }
+
+        if (!age) {
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Idade" })
+            return
+        }
+        else {
+            updatedData.age = age
+        }
+
+        if (!weight) {
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Altura" })
+            return
+        }
+        else {
+            updatedData.weight = weight
+        }
+
+        if (!color) {
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Cor" })
+            return
+        } else {
+            updatedData.color = color
+        }
+
+
+        if (images.length === 0) {
+            res.status(422).json({ message: "Pet não pode ser cadastrado sem Foto" })
+            return
+        } else {
+            updatedData.images = []
+            images.map((image) => {
+                updatedData.images.push(image.filename)
+            })
+        }
+
+        await Pet.findByIdAndUpdate(id, updatedData)
+
+        res.status(200).json({ message: "Pet atualizado com sucesso!" })
+
+    }
+
 
 
 
