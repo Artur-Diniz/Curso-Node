@@ -1,5 +1,6 @@
 import Input from '../../pages/form/Input'
-
+import { Link } from 'react-router-dom'
+import styles from '../../pages/form/Form.module.css'
 function Register() {
 
     function handleChange(e) {
@@ -7,7 +8,7 @@ function Register() {
     }
 
     return (
-        < section >
+        < section className={styles.form_container} >
             <h1>Register</h1>
             <form>
                 <Input
@@ -49,8 +50,10 @@ function Register() {
                     handleOnChange={handleChange}
                 />
 
-                <Input type="submit" value="Cadastrar"/>
+                <Input type="submit" value="Cadastrar" />
             </form>
+            <br/>
+            <p> já tem conta? <Link to='/login'> Clique aqui</Link></p>
         </section >
     )
 

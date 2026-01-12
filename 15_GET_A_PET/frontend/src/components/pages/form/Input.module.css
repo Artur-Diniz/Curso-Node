@@ -1,6 +1,22 @@
-.input {
-    min-height: 60vh ;
-    padding: 1em 2em 3em ;
-    max-width: 1200px;
-    margin: 0 auto ;
+.form_control{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1em;
+}
+
+.form_control label{
+    margin-bottom: .3em;
+    font-weight: bold;
+    font-size: .8em;
+}
+
+.form_control input {
+    padding: .7em;
+    border: 1px solid #777;
+    border-radius: 5px;
+}
+
+.form_control input::placeholder {
+    color: #7b7b7b;
+    
 }
