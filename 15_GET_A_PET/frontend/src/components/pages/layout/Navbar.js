@@ -23,11 +23,14 @@ function Navbar() {
                     <Link to="/">Adotar</Link>
                 </li>
                 {authenticated ? (
-                    <div>
+                    <>
+                        <li>
+                            <Link to="/user/Profile">Perfil</Link>
+                        </li>
                         <li onClick={logout}>
                             <Link to="/">Sair</Link>
                         </li>
-                    </div>) :
+                    </>) :
                     (
                         <>
                             <li>
