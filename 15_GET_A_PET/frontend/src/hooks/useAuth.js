@@ -2,7 +2,6 @@ import api from '../utils/api'
 
 import { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
-import Register from '../components/pages/Auth/Register'
 
 export default function useAuth() {
 
@@ -18,7 +17,7 @@ export default function useAuth() {
         }
 
 
-        return { register }
-    }
 
+    }
+    return { register }
 }

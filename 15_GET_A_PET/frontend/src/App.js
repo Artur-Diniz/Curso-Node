@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import Footer from './components/pages/layout/Footer'
 import Navbar from './components/pages/layout/Navbar'
 import Container from './components/pages/layout/Container'
+import Message from './components/pages/layout/Message'
 
 import Login from "./components/pages/Auth/Login"
 import Register from "./components/pages/Auth/Register"
@@ -16,6 +17,7 @@ function App() {
     <Router>
       <UserProvider>
         <Navbar />
+        <Message />
         <Container>
           <Routes>
             <Route path='/login' element={<Login />} />
