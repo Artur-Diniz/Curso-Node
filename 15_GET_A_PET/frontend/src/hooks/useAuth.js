@@ -50,7 +50,28 @@ export default function useAuth() {
         navigate('/');
     }
 
-    function logout (){
+    async function login(user) {
+        let msgText = 'Login realizado com sucesso!'
+        let msgType = 'sucess'
+
+        try {
+
+            const data = await api.post('users/login', user).then((response) => {
+                return response.data
+            })
+
+            await authUser(data)
+
+        } catch (error) {
+            msgText = error.response.data.message
+            msgType = 'error'
+        }
+
+        setFlashMessage(msgText, msgType)
+
+    }
+
+    function logout() {
         const msgText = 'Logout realizado com sucesso!'
         const msgType = 'sucess'
 
@@ -59,9 +80,9 @@ export default function useAuth() {
         api.defaults.headers.Authorization = undefined
         navigate('/')
 
-        setFlashMessage(msgText,msgType)
+        setFlashMessage(msgText, msgType)
     }
 
 
-    return { authenticated, register, logout }
+    return { authenticated, register, logout, login }
 }
