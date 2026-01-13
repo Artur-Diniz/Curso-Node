@@ -1,11 +1,26 @@
 import api from '../utils/api'
 
-import { useState, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import userFlashMessage from './useFlashMessage'
 
 export default function useAuth() {
-    const{setFlashMessage} = userFlashMessage()
+    const [authenticated, setAuthenticated] = useState(false)
+    const { setFlashMessage } = userFlashMessage()
+
+    //da versão v6 do react não existe mais history somente Navigate
+    const navigate = useNavigate()
+
+    useEffect(() => {
+
+        const token = localStorage.getItem('token')
+
+        if (token) {
+            api.defaults.headers.Authorization = `Bearer ${JSON.parse(token)}`
+            setAuthenticated(true)
+        }
+
+    })
 
     async function register(user) {
 
@@ -16,7 +31,8 @@ export default function useAuth() {
             const data = await api.post('/users/register', user).then((Response) => {
                 return Response.data
             })
-            console.log(data)
+
+            await authUser(data)
 
         } catch (error) {
             msgText = error.response.data.message
@@ -24,8 +40,28 @@ export default function useAuth() {
             console.log(error)
         }
 
+        setFlashMessage(msgText, msgType)
+    }
+
+    async function authUser(data) {
+        setAuthenticated(true);
+
+        localStorage.setItem('token', JSON.stringify(data.token));
+        navigate('/');
+    }
+
+    function logout (){
+        const msgText = 'Logout realizado com sucesso!'
+        const msgType = 'sucess'
+
+        setAuthenticated(false)
+        localStorage.removeItem('token')
+        api.defaults.headers.Authorization = undefined
+        navigate('/')
+
         setFlashMessage(msgText,msgType)
     }
 
-    return { register }
+
+    return { authenticated, register, logout }
 }
