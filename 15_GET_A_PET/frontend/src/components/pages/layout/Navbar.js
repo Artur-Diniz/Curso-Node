@@ -15,8 +15,15 @@ function Navbar() {
     return (
         <nav className={styles.navbar}>
             <div className={styles.navbar_logo}>
-                <img src={Logo} alt="Get A Pet" ></img>
-                <h2> Get A Pet</h2>
+                <Link to="/">
+                    <img src={Logo} alt="Get A Pet" ></img>
+
+                </Link>
+                <Link to="/">
+                    <h2> Get A Pet</h2>
+
+                </Link>
+
             </div>
             <ul>
                 <li>

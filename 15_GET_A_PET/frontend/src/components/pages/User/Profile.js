@@ -1,3 +1,4 @@
+import api from '../../../utils/api'
 import { useState, useEffect } from 'react'
 
 import Style from './Profile.module.css'
@@ -6,6 +7,18 @@ import Input from '../../pages/form/Input'
 
 function Profile() {
     const [user, setUser] = useState({})
+    const [token] = useState(localStorage.getItem('token') || '')
+    useEffect(() => {
+
+        api.get('/users/checkuser', {
+            headers: {
+                Authorization: `Bearer ${JSON.parse(token)}`
+            }
+        }).then((response) => {
+            setUser(response.data)
+        })
+    }, [token])
+
 
     function onFileChange() {
 
@@ -14,6 +27,7 @@ function Profile() {
     function handleChange(e) {
         setUser({ ...user, [e.target.name]: e.target.value })
     }
+
     function handleSubmit(e) {
         e.preventDefault()
 
