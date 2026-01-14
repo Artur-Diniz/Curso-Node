@@ -4,10 +4,15 @@ import { useState, useEffect } from 'react'
 import Style from './Profile.module.css'
 import formStyles from '../form/Form.module.css'
 import Input from '../../pages/form/Input'
+import useFlashMessage from '../../../hooks/useFlashMessage'
+import RoundedImage from '../layout/RoundedImage'
 
 function Profile() {
     const [user, setUser] = useState({})
     const [token] = useState(localStorage.getItem('token') || '')
+    const { setFlashMessage } = useFlashMessage()
+    const [preview, setPreview] = useState()
+
     useEffect(() => {
 
         api.get('/users/checkuser', {
@@ -20,29 +25,58 @@ function Profile() {
     }, [token])
 
 
-    function onFileChange() {
-
+    function onFileChange(e) {
+        setPreview(e.target.files[0]) 
+        setUser({ ...user, [e.target.name]: e.target.files[0] })
     }
 
     function handleChange(e) {
+        console.log(process.env.REACT_APP_API)
+        console.log('teste')
         setUser({ ...user, [e.target.name]: e.target.value })
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e.preventDefault()
 
-        // register(user)
+        let msgType = 'sucess'
+
+        const formData = new FormData()
+
+        Object.keys(user).forEach((key) =>
+            formData.append(key, user[key])
+        )
+
+        const data = await api.patch(`/users/edit/${user.id_id}`, formData, {
+            headers: {
+                Authorization: `Bearer ${JSON.parse(token)}`,
+                'Content-Type': 'multipart/form-data',
+            }
+        }).then((response) => {
+            return response.data
+
+        }).catch((err) => {
+            msgType = 'error'
+            return err.response.data
+        })
+
+        setFlashMessage(data.message, msgType)
     }
+
+
 
     return (
         < section >
             <div className={Style.profile_header}>
                 <h1>Perfil</h1>
-                <p>Preview Imagem</p>
+                {(user.image || preview) && (
+                    <RoundedImage src={preview ? URL.createObjectURL(preview) : `${process.env.REACT_APP_API}/images/users/${user.image}`} alt={user.name}/>
+               
+               )}
             </div>
 
 
-            <form className={formStyles.form_container}>
+            <form onSubmit={handleSubmit} className={formStyles.form_container}>
                 <Input
                     text="Imagem"
                     type="file"
@@ -84,12 +118,12 @@ function Profile() {
                 <Input
                     text="Confirme sua Senha"
                     type="text"
-                    name="password"
+                    name="confirmpassword"
                     placeholder="Digite o sua Senha"
                     handleOnChange={handleChange}
                 />
 
-                <Input type="submit" value="Cadastrar" />
+                <Input type="submit" value="Atualizar perfil" />
             </form>
         </section >
     )
