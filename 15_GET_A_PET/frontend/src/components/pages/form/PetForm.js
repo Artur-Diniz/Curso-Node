@@ -14,22 +14,41 @@ function PetForm({ handleSubmit, petData, btnText }) {
 
 
     function onFileChange(e) {
-        setPreview(e.target.files[0])
+        setPreview(Array.from(e.target.files))
         setPet({ ...pet, [e.target.name]: e.target.files[0] })
     }
     function handleColor(e) {
+        setPet({ ...pet, color: e.target.options[e.target.selectedIndex].text })
 
     }
 
     function handleChange(e) {
-        console.log(process.env.REACT_APP_API)
-        console.log('teste')
+
         setPet({ ...pet, [e.target.name]: e.target.value })
     }
 
 
+    function handleSubmit(e) {
+        e.preventDefault()
+
+        console.log(pet)
+    }
+
     return (
-        <form className={formStyle.form_container}>
+        <form className={formStyle.form_container} onSubmit={handleSubmit}>
+
+            <div className={formStyle.preview_pet_images}>
+                {preview.length > 0
+                    ? preview.map((image, index) => (
+                        <img src={URL.createObjectURL(image)} alt={pet.name} key={`${pet.name}+${index}`} />
+                    )) :
+                    pet.images &&
+                    pet.images.map((image, index) => (
+                        <img src={`${process.eventNames.REACT_APP_API}/images/pets/${image}`} alt={pet.name} key={`${pet.name}+${index}`} />
+                    ))
+                }
+            </div>
+
             <Input
                 text="Imagem do Pet"
                 type="file"

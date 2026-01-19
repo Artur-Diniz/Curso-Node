@@ -31,8 +31,6 @@ function Profile() {
     }
 
     function handleChange(e) {
-        console.log(process.env.REACT_APP_API)
-        console.log('teste')
         setUser({ ...user, [e.target.name]: e.target.value })
     }
 
