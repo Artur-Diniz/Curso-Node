@@ -14,9 +14,11 @@ function PetForm({ handleSubmit, petData, btnText }) {
 
 
     function onFileChange(e) {
-        setPreview(Array.from(e.target.files))
-        setPet({ ...pet, [e.target.name]: e.target.files[0] })
+        const files = Array.from(e.target.files)
+        setPreview(files)
+        setPet({ ...pet, [e.target.name]: files }) // agora images vira File[]
     }
+
     function handleColor(e) {
         setPet({ ...pet, color: e.target.options[e.target.selectedIndex].text })
 
@@ -28,14 +30,14 @@ function PetForm({ handleSubmit, petData, btnText }) {
     }
 
 
-    function handleSubmit(e) {
+    function submit(e) {
         e.preventDefault()
 
-        console.log(pet)
+        handleSubmit(pet)
     }
 
     return (
-        <form className={formStyle.form_container} onSubmit={handleSubmit}>
+        <form className={formStyle.form_container} onSubmit={submit}>
 
             <div className={formStyle.preview_pet_images}>
                 {preview.length > 0
